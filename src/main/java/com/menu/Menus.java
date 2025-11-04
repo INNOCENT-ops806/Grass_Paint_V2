@@ -13,6 +13,7 @@ public final class Menus {
     addEditMenu(menu_bar);
     addViewMenu(menu_bar);
     addUndoMenu(menu_bar);
+    addRedoMenu(menu_bar);
   }
 
   private static void addFileMenu(JMenuBar menu_bar) {
@@ -49,5 +50,10 @@ public final class Menus {
     JMenu undo = new JMenu("Undo");
     menu_bar.add(undo);
   }
+  private static void addRedoMenu(JMenuBar menu_bar) {
+    JMenu redo = new JMenu("Redo");
+    menu_bar.add(redo);
+  }
+
 
 }
