@@ -88,7 +88,7 @@
       <artifactId>exec-maven-plugin</artifactId>
       <version>3.1.0</version>
       <configuration>
-        <mainClass>com.grass_paint.grassPaint</mainClass>
+        <mainClass>com.example.Grass_Paint_V2</mainClass>
       </configuration>
     </plugin>
     <plugin>
@@ -98,7 +98,7 @@
       <configuration>
         <archive>
           <manifest>
-            <mainClass>com.grass_paint.grassPaint</mainClass>
+            <mainClass>com.example.Grass_Paint_V2</mainClass>
           </manifest>
         </archive>
       </configuration>
