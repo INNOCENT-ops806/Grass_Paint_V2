@@ -11,11 +11,11 @@
 </properties>
 
 <groupId>com.example</groupId>
-<artifactId>Grass_Paint_V2</artifactId>
+<artifactId>GrassPaint</artifactId>
 <version>1.0-SNAPSHOT</version>
 
-<name>Grass_Paint_V2</name>
-<url>http://github.com/INNOCENT-ops806/Grass_Paint_V2</url>
+<name>GrassPaint</name>
+<url>http://github.com/INNOCENT-ops806/GrassPaint</url>
 
 <dependencies>
   <dependency>
@@ -53,6 +53,17 @@
 </dependencies>
 
 <build>
+  <resources> 
+    <resource>   
+      <directory>src/main/resources/icons/</directory>
+      <targetPath>icons</targetPath>
+    </resource>
+    <resource>
+    <directory>src/main/resources</directory>
+    <excludes>
+      <exclude>icons/*</exclude> </excludes>
+  </resource>
+</resources>
   <pluginManagement>
     <plugins>
       <plugin>
@@ -88,7 +99,7 @@
       <artifactId>exec-maven-plugin</artifactId>
       <version>3.1.0</version>
       <configuration>
-        <mainClass>com.example.Grass_Paint_V2</mainClass>
+        <mainClass>com.example.GrassPaint</mainClass>
       </configuration>
     </plugin>
     <plugin>
@@ -98,7 +109,7 @@
       <configuration>
         <archive>
           <manifest>
-            <mainClass>com.example.Grass_Paint_V2</mainClass>
+            <mainClass>com.example.GrassPaint</mainClass>
           </manifest>
         </archive>
       </configuration>
