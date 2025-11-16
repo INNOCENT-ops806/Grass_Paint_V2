@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Building and running Maven project: Grass_Paint_V2..."
+echo "Building and running Maven project: GrassPaint..."
 
 mvn clean package exec:java
 
