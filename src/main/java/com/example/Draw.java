@@ -5,8 +5,10 @@ import com.environment.WindowTools;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -15,26 +17,43 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.JFileChooser;
 
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused")
 public class Draw extends JFrame implements ActionListener {
+  private int saveCounter;
+  private Canvas canvas;
+  private JLabel filenameBar, thicknessStat;// :NOTE: not done here!
+  private JFileChooser fileChooser;
+  private File file;
 
   public Draw() {
-    super("Grass_Paint");
+    super("GrassPaint");
+    // :NOTE: Global Variables initialization
+    canvas = new Canvas();
+    filenameBar = new JLabel("No file");
+    thicknessStat = new JLabel();
+
+    // :NOTE: Frame stuff
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    this.setSize(WindowTools.GetScreenWidth(), WindowTools.GetScreenHeight());
+    this.setLocationRelativeTo(null);
+    this.setSize(900, 600);
     setEnvironmentalDecoration();
     this.setJMenuBar(menuBar());
     this.setLayout(new BorderLayout());
     this.add(equipmentPanel(), BorderLayout.NORTH);
-    // this.add(sizePanel(), BorderLayout.WEST);
-    System.out.println("[INFO] Draw working...");
+    this.add(canvas, BorderLayout.CENTER);
+    this.add(statusBarPanel(), BorderLayout.SOUTH);
+    this.add(sizePanel(), BorderLayout.WEST);
     this.setVisible(true);
+    System.out.println("[INFO] Draw working...");
   }
 
   private List<JButton> addBtn_toEquipment() {
@@ -94,19 +113,36 @@ public class Draw extends JFrame implements ActionListener {
     gray.addActionListener(this);
     buttons.add(gray);
 
+    Icon color_ChooserIcon = new ImageIcon(getClass().getResource("/icons/color-chooser.png"));
+    JButton color_picker = new JButton(color_ChooserIcon);
+    color_picker.setPreferredSize(new Dimension(30, 30));
+    color_picker.addActionListener(this);
+    buttons.add(color_picker);
+
     System.out.println("[INFO] addBtn_toEquipment working...");
     return buttons;
   }
 
   private JPanel sizePanel() {
     JPanel sizePnl = new JPanel();
-    sizePnl.setBackground(Color.GREEN);
-    JSlider slider = new JSlider(JSlider.VERTICAL);// :NOTE: Still need modification
+    sizePnl.add(new JSeparator(JSeparator.VERTICAL));
+    sizePnl.setPreferredSize(new Dimension(25, WindowTools.GetScreenHeight()));
+    // sizePnl.setBackground(Color.GREEN);
+    JSlider slider = new JSlider(JSlider.VERTICAL, 0, 100, 0);// :NOTE: Still need modification
+    // slider.setValue(0);
     slider
-        .setPreferredSize(new Dimension(WindowTools.GetScreenHeight(), (int) (WindowTools.GetScreenHeight() * 0.0005)));
+        .setPreferredSize(new Dimension(WindowTools.GetScreenHeight(), (int) (WindowTools.GetScreenHeight() * 0.75)));
+    slider.setVisible(true);
+    thicknessStat.setText(String.format("%s", slider.getValue()));// :NOTE: Not done here!
     sizePnl.add(slider);
     System.out.println("[INFO] sizePanel working...");
     return sizePnl;
+  }
+
+  private JPanel statusBarPanel() {
+    JPanel statusPnl = new JPanel(new FlowLayout());
+    statusPnl.add(filenameBar);
+    return statusPnl;
   }
 
   private JPanel equipmentPanel() {
@@ -122,6 +158,10 @@ public class Draw extends JFrame implements ActionListener {
   private void setEnvironmentalDecoration() {
     if (System.getProperty("os.name").equalsIgnoreCase("Linux")) {
       System.setProperty("flatlaf.menuBarEmbedded", "false");
+      System.out.println("[SYSTEM] Linux");
+    } else {
+      System.out.println("[SYSTEM] Windows");
+      System.setProperty("flatlaf.menuBarEmbedded", "true");
     }
     System.out.println("[INFO] SetEnvironmentalDecoration working...");
   }
@@ -170,6 +210,8 @@ public class Draw extends JFrame implements ActionListener {
 
   private JMenu fileMenu() {
     Icon saveIcon = new ImageIcon(getClass().getResource("/icons/save.png"));
+    // Icon save_asIcon = new
+    // ImageIcon(getClass().getResource("/icons/save-as.png"));
     Icon openIcon = new ImageIcon(getClass().getResource("/icons/new-window.png"));
     Icon exitIcon = new ImageIcon(getClass().getResource("/icons/exit.png"));
 
@@ -183,8 +225,15 @@ public class Draw extends JFrame implements ActionListener {
     saveFile.addActionListener(this);
     fileMenu.add(saveFile);
 
+    /*
+     * :NOTE: should be added when other image format are supported
+     * JMenuItem save_as = new JMenuItem("Save As", save_asIcon);
+     * save_as.addActionListener(this);
+     * fileMenu.add(save_as);
+     */
+
     fileMenu.addSeparator();
-    JMenuItem exit = new JMenuItem("exit", exitIcon);
+    JMenuItem exit = new JMenuItem("Exit", exitIcon);
     exit.addActionListener(this);
     fileMenu.add(exit);
 
@@ -194,10 +243,53 @@ public class Draw extends JFrame implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (e.getActionCommand().equals("exit")) {
+    if (e.getActionCommand().equals("Exit")) {
+      System.out.println("[ACTION] Exit pressed...");
       System.exit(0);
-    } else if (e.getActionCommand().equals("open")) {
+    } else if (e.getActionCommand().equals("Save File")) {
+      System.out.println("Save pressed...");
+      if (saveCounter == 0) {
+        fileChooser = new JFileChooser();
+        int returnVal = fileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          file = fileChooser.getSelectedFile();
+          saveCounter = 1;
+          filenameBar.setText(file.toString());
+          canvas.saveFile(file);
+        }
+      } else {
+        filenameBar.setText(file.toString());
+        canvas.saveFile(file);
+      }
+
+    } else if (e.getActionCommand().equals("Open File")) {
+      System.out.println("[ACTION] Open pressed...");
+      if (System.getProperty("os.name").equalsIgnoreCase("Linux")) {
+        fileChooser = new JFileChooser("~/");
+      } else {
+        fileChooser = new JFileChooser("C:\\");
+      }
+      fileChooser.setFileFilter(FileFilter.png);
+      int returnVal = fileChooser.showOpenDialog(this);
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        file = fileChooser.getSelectedFile();
+        canvas.openFile(file);
+        filenameBar.setText(file.toString());
+      } else {
+        System.out.println("[INFO] User cancelled opening file");
+      }
+    } else if (e.getActionCommand().equals("Undo")) {
+      System.out.println("[ACTION] Undo pressed...");
+      canvas.undo();
+    } else if (e.getActionCommand().equals("Redo")) {
+      System.out.println("[ACTION] Redo pressed...");
+      canvas.redo();
+    } else if (e.getActionCommand().equals("license")) {
+      System.out.println("[ACTION] license pressed...");
+      // :NOTE: change the content of the center panel to show some text here
+    } else if (e.getActionCommand().equals("about")) {
+      System.out.println("[ACTION] about pressed...");
+      // :NOTE: change the content of the center panel to show some text here
     }
-    System.out.println("[INFO] actionPerformed working...");
   }
 }
