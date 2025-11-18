@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -33,6 +33,8 @@ public class Draw extends JFrame implements ActionListener {
   private JLabel filenameBar, thicknessStat;// :NOTE: not done here!
   private JFileChooser fileChooser;
   private File file;
+  private Color color = Color.WHITE;
+  private JButton pencil, eraser, color_picker, gray, red, pink, black, green, white, yellow, blue;
 
   public Draw() {
     super("GrassPaint");
@@ -50,6 +52,7 @@ public class Draw extends JFrame implements ActionListener {
     this.setLayout(new BorderLayout());
     this.add(equipmentPanel(), BorderLayout.NORTH);
     this.add(canvas, BorderLayout.CENTER);
+    statusBarPanel().setVisible(true);
     this.add(statusBarPanel(), BorderLayout.SOUTH);
     this.add(sizePanel(), BorderLayout.WEST);
     this.setVisible(true);
@@ -60,62 +63,79 @@ public class Draw extends JFrame implements ActionListener {
     List<JButton> buttons = new ArrayList<>();
 
     Icon pencilIcon = new ImageIcon(getClass().getResource("/icons/pencil.png"));
-    JButton pencil = new JButton(pencilIcon);
-    pencil.setPreferredSize(new Dimension(30, 30));
+    pencil = new JButton(pencilIcon);
+    pencil.setToolTipText("Pencil");
+    pencil.setPreferredSize(new Dimension(48, 48));
     pencil.addActionListener(this);
     buttons.add(pencil);
 
-    JButton red = new JButton();
-    red.setPreferredSize(new Dimension(30, 30));
+    Icon eraserIcon = new ImageIcon(getClass().getResource("/icons/eraser.png"));
+    eraser = new JButton(eraserIcon);
+    eraser.setToolTipText("Eraser");
+    eraser.setPreferredSize(new Dimension(48, 48));
+    eraser.addActionListener(this);
+    buttons.add(eraser);
+
+    red = new JButton();
+    red.setToolTipText("red");
+    red.setPreferredSize(new Dimension(48, 48));
     red.setBackground(Color.RED);
     red.addActionListener(this);
     buttons.add(red);
 
-    JButton pink = new JButton();
-    pink.setPreferredSize(new Dimension(30, 30));
+    pink = new JButton();
+    pink.setToolTipText("pink");
+    pink.setPreferredSize(new Dimension(48, 48));
     pink.setBackground(Color.PINK);
     pink.addActionListener(this);
     buttons.add(pink);
 
-    JButton black = new JButton();
-    black.setPreferredSize(new Dimension(30, 30));
+    black = new JButton();
+    black.setToolTipText("black");
+    black.setPreferredSize(new Dimension(48, 48));
     black.setBackground(Color.BLACK);
     black.addActionListener(this);
     buttons.add(black);
 
-    JButton green = new JButton();
-    green.setPreferredSize(new Dimension(30, 30));
+    green = new JButton();
+    green.setToolTipText("green");
+    green.setPreferredSize(new Dimension(48, 48));
     green.setBackground(Color.GREEN);
     green.addActionListener(this);
     buttons.add(green);
 
-    JButton white = new JButton();
-    white.setPreferredSize(new Dimension(30, 30));
+    white = new JButton();
+    white.setToolTipText("white");
+    white.setPreferredSize(new Dimension(48, 48));
     white.setBackground(Color.WHITE);
     white.addActionListener(this);
     buttons.add(white);
 
-    JButton yellow = new JButton();
-    yellow.setPreferredSize(new Dimension(30, 30));
+    yellow = new JButton();
+    yellow.setToolTipText("yellow");
+    yellow.setPreferredSize(new Dimension(48, 48));
     yellow.setBackground(Color.YELLOW);
     yellow.addActionListener(this);
     buttons.add(yellow);
 
-    JButton blue = new JButton();
-    blue.setPreferredSize(new Dimension(30, 30));
+    blue = new JButton();
+    blue.setToolTipText("blue");
+    blue.setPreferredSize(new Dimension(48, 48));
     blue.setBackground(Color.BLUE);
     blue.addActionListener(this);
     buttons.add(blue);
 
-    JButton gray = new JButton();
-    gray.setPreferredSize(new Dimension(30, 30));
+    gray = new JButton();
+    gray.setToolTipText("gray");
+    gray.setPreferredSize(new Dimension(48, 48));
     gray.setBackground(Color.GRAY);
     gray.addActionListener(this);
     buttons.add(gray);
 
     Icon color_ChooserIcon = new ImageIcon(getClass().getResource("/icons/color-chooser.png"));
-    JButton color_picker = new JButton(color_ChooserIcon);
-    color_picker.setPreferredSize(new Dimension(30, 30));
+    color_picker = new JButton(color_ChooserIcon);
+    color_picker.setToolTipText("Color Picker");
+    color_picker.setPreferredSize(new Dimension(48, 48));
     color_picker.addActionListener(this);
     buttons.add(color_picker);
 
@@ -131,7 +151,7 @@ public class Draw extends JFrame implements ActionListener {
     JSlider slider = new JSlider(JSlider.VERTICAL, 0, 100, 0);// :NOTE: Still need modification
     // slider.setValue(0);
     slider
-        .setPreferredSize(new Dimension(WindowTools.GetScreenHeight(), (int) (WindowTools.GetScreenHeight() * 0.75)));
+        .setPreferredSize(new Dimension(WindowTools.GetScreenHeight(), (int) (WindowTools.GetScreenHeight() * 0.70)));
     slider.setVisible(true);
     thicknessStat.setText(String.format("%s", slider.getValue()));// :NOTE: Not done here!
     sizePnl.add(slider);
@@ -147,7 +167,6 @@ public class Draw extends JFrame implements ActionListener {
 
   private JPanel equipmentPanel() {
     JPanel equipment = new JPanel();
-    equipment.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     for (JButton btns : addBtn_toEquipment()) {
       equipment.add(btns);
     }
@@ -278,18 +297,24 @@ public class Draw extends JFrame implements ActionListener {
       } else {
         System.out.println("[INFO] User cancelled opening file");
       }
-    } else if (e.getActionCommand().equals("Undo")) {
+    } else if (e.getActionCommand().equals("undo")) {
       System.out.println("[ACTION] Undo pressed...");
       canvas.undo();
-    } else if (e.getActionCommand().equals("Redo")) {
+    } else if (e.getActionCommand().equals("redo")) {
       System.out.println("[ACTION] Redo pressed...");
       canvas.redo();
     } else if (e.getActionCommand().equals("license")) {
       System.out.println("[ACTION] license pressed...");
-      // :NOTE: change the content of the center panel to show some text here
     } else if (e.getActionCommand().equals("about")) {
       System.out.println("[ACTION] about pressed...");
-      // :NOTE: change the content of the center panel to show some text here
+    } else if (e.getSource() == pencil) {
+      canvas.pencil();
+    } else if (e.getSource() == color_picker) {
+      color = JColorChooser.showDialog(canvas, "Pick your color!", color);// :canvas can be null or this
+      if (color == null) {
+        color = (Color.WHITE);
+      }
+      // canvas.setPaint
     }
   }
 }

@@ -3,6 +3,10 @@ package com.example;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -17,11 +21,16 @@ import javax.swing.JPanel;
 public class Canvas extends JPanel {
   private int X1, Y1, X2, Y2;
   private Graphics2D g;
-  private Image img, background;// :NOTE: I don't have a know how about this -> undoTemp, redoTemp;
+  private Image img, undoTemp, redoTemp;
+  private final Custom_Stack<Image> undoStack = new Custom_Stack<>(10);
+  private final Custom_Stack<Image> redoStack = new Custom_Stack<>(10);
+  private MouseListener listener;
+  private MouseMotionAdapter motion;
 
   public Canvas() {
-    // this.setBackground(Color.WHITE);
-    this.setBackground(new Color(50, 50, 50));
+    this.setBackground(Color.WHITE);
+    defaultListener();
+    this.setBackground(new Color(250, 250, 250));
     this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     System.out.println("[INFO] Canvas working...");
   }
@@ -43,6 +52,36 @@ public class Canvas extends JPanel {
     return copyOfImage;
   }
 
+  private void saveToStack(Image img) {
+    undoStack.push(copyImage(img));
+  }
+
+  public void defaultListener() {
+    setDoubleBuffered(false);
+    listener = new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        saveToStack(img);
+        X2 = e.getX();
+        Y2 = e.getY();
+      }
+    };
+    motion = new MouseMotionAdapter() {
+      public void mouseDragged(MouseEvent e) {
+        X1 = e.getX();
+        Y1 = e.getY();
+
+        if (g != null) {
+          g.drawLine(X2, Y2, X1, Y1);
+          repaint();
+          X2 = X1;
+          Y2 = Y1;
+        }
+      }
+    };
+    addMouseListener(listener);
+    addMouseMotionListener(motion);
+  }
+
   public void openFile(File file) {
     try {
       img = ImageIO.read(file);
@@ -61,28 +100,28 @@ public class Canvas extends JPanel {
     repaint();
   }
 
-  public void clear() {
-    if (background != null) {
-      setImage(copyImage(background));
-    } else {
-      g.setPaint(Color.white);
-      g.fillRect(0, 0, getSize().width, getSize().height);
-      g.setPaint(Color.black);
-    }
-    repaint();
-  }
-
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
   }
 
   public void undo() {
-    // :TODO: Implement functionality
+    if (undoStack.size() > 0) {
+      undoTemp = undoStack.pop();
+      redoStack.push(img);
+      setImage(undoTemp);
+    }
   }
 
   public void redo() {
-    // :TODO: Implement functionality
+    if (redoStack.size() > 0) {
+      redoTemp = redoStack.pop();
+      undoStack.push(img);
+      setImage(redoTemp);
+    }
+  }
+
+  public void pencil() {
   }
 
 }
