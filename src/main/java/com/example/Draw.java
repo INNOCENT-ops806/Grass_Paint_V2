@@ -4,8 +4,12 @@ import com.environment.WindowTools;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+//import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+//import java.awt.Image;
+//import java.awt.Point;
+//import java.awt.Toolkit;//:NOTE: Used for custom cursor creation
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -24,6 +28,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.JFileChooser;
 
 //@SuppressWarnings("unused")
@@ -35,6 +41,8 @@ public class Draw extends JFrame implements ActionListener {
   private File file;
   private Color color = Color.WHITE;
   private JButton pencil, eraser, color_picker, gray, red, pink, black, green, white, yellow, blue;
+  private JSlider slider;
+  private JMenuItem open;
 
   public Draw() {
     super("GrassPaint");
@@ -143,17 +151,24 @@ public class Draw extends JFrame implements ActionListener {
     return buttons;
   }
 
+  ChangeListener thick = new ChangeListener() {
+    public void stateChanged(ChangeEvent e) {
+      thicknessStat.setText(String.format("%s",
+          slider.getValue()));
+      canvas.setThickness(slider.getValue());
+    }
+  };
+
   private JPanel sizePanel() {
     JPanel sizePnl = new JPanel();
     sizePnl.add(new JSeparator(JSeparator.VERTICAL));
     sizePnl.setPreferredSize(new Dimension(25, WindowTools.GetScreenHeight()));
-    // sizePnl.setBackground(Color.GREEN);
-    JSlider slider = new JSlider(JSlider.VERTICAL, 0, 100, 0);// :NOTE: Still need modification
-    // slider.setValue(0);
+    slider = new JSlider(JSlider.VERTICAL, 0, 100, 0);
+    slider.addChangeListener(thick);
     slider
         .setPreferredSize(new Dimension(WindowTools.GetScreenHeight(), (int) (WindowTools.GetScreenHeight() * 0.70)));
     slider.setVisible(true);
-    thicknessStat.setText(String.format("%s", slider.getValue()));// :NOTE: Not done here!
+    thicknessStat.setText(String.format("%s", slider.getValue()));
     sizePnl.add(slider);
     System.out.println("[INFO] sizePanel working...");
     return sizePnl;
@@ -236,7 +251,7 @@ public class Draw extends JFrame implements ActionListener {
 
     JMenu fileMenu = new JMenu("File");
 
-    JMenuItem open = new JMenuItem("Open File", openIcon);
+    open = new JMenuItem("Open File", openIcon);
     open.addActionListener(this);
     fileMenu.add(open);
 
@@ -280,8 +295,7 @@ public class Draw extends JFrame implements ActionListener {
         filenameBar.setText(file.toString());
         canvas.saveFile(file);
       }
-
-    } else if (e.getActionCommand().equals("Open File")) {
+    } else if (e.getSource() == open) {
       System.out.println("[ACTION] Open pressed...");
       if (System.getProperty("os.name").equalsIgnoreCase("Linux")) {
         fileChooser = new JFileChooser("~/");
@@ -289,8 +303,8 @@ public class Draw extends JFrame implements ActionListener {
         fileChooser = new JFileChooser("C:\\");
       }
       fileChooser.setFileFilter(FileFilter.png);
-      int returnVal = fileChooser.showOpenDialog(this);
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
+      fileChooser = new JFileChooser();
+      if (fileChooser.showOpenDialog(open) == JFileChooser.APPROVE_OPTION) {
         file = fileChooser.getSelectedFile();
         canvas.openFile(file);
         filenameBar.setText(file.toString());
@@ -308,13 +322,50 @@ public class Draw extends JFrame implements ActionListener {
     } else if (e.getActionCommand().equals("about")) {
       System.out.println("[ACTION] about pressed...");
     } else if (e.getSource() == pencil) {
+      System.out.println("[ACTION] pencil pressed...");
       canvas.pencil();
+    } else if (e.getSource() == eraser) {
+      /*
+       * :TODO: change the defaultCursor to custom eraser cursor.
+       *
+       * =================================================
+       * The commented out code need complex implementation to check where the cursor
+       * is in order to
+       * continue using the custom cursor
+       * =================================================
+       *
+       * Toolkit toolkit = Toolkit.getDefaultToolkit();
+       * Image image = toolkit.getImage(getClass().getResource("/icons/eraser.png"));
+       * Cursor cursor = toolkit.createCustomCursor(image, new Point(0, 0), "img");
+       * this.setCursor(cursor);
+       */
+      System.out.println("[ACTION] eraser pressed...");
     } else if (e.getSource() == color_picker) {
-      color = JColorChooser.showDialog(canvas, "Pick your color!", color);// :canvas can be null or this
+      System.out.println("[ACTION] color_picker pressed...");
+      color = JColorChooser.showDialog(canvas, "Pick your color!", color);
       if (color == null) {
-        color = (Color.WHITE);
+        color = (Color.BLACK);
       }
-      // canvas.setPaint
+      canvas.chooser(color);
+    }
+
+    // :NOTE: Color buttons
+    else if (e.getSource() == red) {
+      canvas.red();
+    } else if (e.getSource() == black) {
+      canvas.black();
+    } else if (e.getSource() == blue) {
+      canvas.blue();
+    } else if (e.getSource() == pink) {
+      canvas.pink();
+    } else if (e.getSource() == green) {
+      canvas.green();
+    } else if (e.getSource() == yellow) {
+      canvas.yellow();
+    } else if (e.getSource() == white) {
+      canvas.white();
+    } else if (e.getSource() == gray) {
+      canvas.gray();
     }
   }
 }
