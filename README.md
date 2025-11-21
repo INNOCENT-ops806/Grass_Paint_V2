@@ -1,28 +1,98 @@
 # GrassPaint (Touch some grass by drawing some grass)
 
-> [!NOTE]
-> The Project is under construction, not fully functional.
-> The README and the code is going to change a lot so be sure to catch the changes before they catch you.
+[](https://www.google.com/search?q=https://github.com/INNOCENT-ops806/GrassPaint/releases/tag/v0.9.0-beta)
+
+> [\!NOTE]
+> The project is currently in **Beta (v0.9.0)**. We are actively seeking bug reports before the stable v1.0 release. The code and interface are subject to change based on user feedback.
 
 ## Description
 
-I initially had the idea of creating such software when I bought a drawing tablet.
-I used other drawing software but it didn't feel right. I didn't know how things work and there were not many shortcuts for my liking(I use vim btw), so I decided to make my own vim drawing app(of course it won't have modes, but it will sure have a lot of shortcuts).
+GrassPaint is a cross-platform drawing application built on Java Swing, designed for users who prioritize **keyboard-centric workflows** and speed.
+
+I initially had the idea for this software after buying a drawing tablet and feeling constrained by the limited and rigid shortcuts in existing applications. While GrassPaint doesn't implement Vim's modal editing, it is engineered to offer a high degree of **shortcut customization** and key bindings to boost your drawing efficiency.
+
+## Key Features (v0.9.0-Beta)
+
+This Beta release includes the essential features for testing the core drawing engine:
+
+- **Persistent History:** Reliable Undo/Redo stack for managing drawing actions.
+- **Canvas Control:** Resizable drawing canvas and dynamic resizing upon image loading.
+- **Refined UI Feedback:** The thickness slider value is only displayed while the slider is actively being dragged.
+- **Core Tools:** Pencil, Eraser (with dynamic background matching), Color Picker, and color presets.
+- **I/O:** Load and save artwork as PNG files.
 
 ## Usage
 
-### Build and Run from source
+### Prerequisites
 
-You can either build from source(fancy hey) by running the "run.sh" script which will create a jar file and also
-run the project
+You must have **Java Development Kit (JDK) 17 or newer** installed to compile and run GrassPaint.
 
-### Download the jar file from the release tab(which is not yet out because we are still in construction)
+### Installation
 
-## Credits
+```sh
+git clone https://github.com/INNOCENT-ops806/GrassPaint.git
+cd GrassPaint
+```
 
-- [swing-paint-application](https://github.com/haxxorsid/swing-paint-application)
+### Running the Application
 
-## Libraries
+You have two options to run the project:
 
-- [FlatLaf](https://www.formdev.com/flatlaf/)
-- [Swing](https://docs.oracle.com/en/java/javase/21/docs/api/java.desktop/javax/swing/)
+#### A. Build and Run from Source (Recommended)
+
+Run the `run.sh` script, which handles compilation and packaging.
+
+```sh
+# Ensure the script is executable and run it
+chmod +x run.sh
+./run.sh
+```
+
+#### B. Download the JAR File
+
+Download the executable `.jar` file from the latest release on GitHub: [Releases](https://github.com/INNOCENT-ops806/GrassPaint/releases/)
+
+To run the JAR file:
+
+```sh
+java -jar /path/to/GrassPaint-v0.9.0-beta.jar
+```
+
+## Screenshots
+
+### GrassPaintV0.9.0
+
+![GrassPaintV0.9.0](screenshots/GrassPaintV0.9.0)
+
+### Picking a color
+
+![GrassPaintV0.9.0](screenshots/GrassPaint_ColorChooser.png)
+
+### Opening an image
+
+![GrassPaintV0.9.0](screenshots/GrassPaint_OpenedImage.png)
+
+### License dialog
+
+![GrassPaintV0.9.0](screenshots/GrassPaint_License.png)
+
+## Reporting Bugs & Feedback (Beta)
+
+If you find a bug, please open an Issue on this repository or send a detailed email. Your reports are essential for the v1.0 stable release\!
+
+**When reporting an issue, please include:**
+
+1. Operating System (e.g., Windows 10, Kali/WSL2).
+2. Your Java Version (`java -version`).
+3. The exact steps required to reproduce the issue.
+
+## Libraries and Credits
+
+### Libraries
+
+- **Core Technology:** Java Swing (Standard Desktop GUI Library).
+- **Look and Feel:** [FlatLaf](https://www.formdev.com/flatlaf/) (Provides the modern, dark/light theme options).
+
+### Credits
+
+- Inspired by the ideas and structure of: [swing-paint-application](https://github.com/haxxorsid/swing-paint-application)
