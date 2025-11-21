@@ -1,15 +1,13 @@
 package com.example;
 
 import com.environment.WindowTools;
-
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Color;
-//import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-//import java.awt.Image;
-//import java.awt.Point;
-//import java.awt.Toolkit;//:NOTE: Used for custom cursor creation
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -32,7 +30,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JFileChooser;
 
-//@SuppressWarnings("unused")
 public class Draw extends JFrame implements ActionListener {
   private int saveCounter;
   private Canvas canvas;
@@ -50,6 +47,7 @@ public class Draw extends JFrame implements ActionListener {
     canvas = new Canvas();
     filenameBar = new JLabel("No file");
     thicknessStat = new JLabel();
+    thicknessStat = new JLabel("Size: 0px");
 
     // :NOTE: Frame stuff
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -153,9 +151,13 @@ public class Draw extends JFrame implements ActionListener {
 
   ChangeListener thick = new ChangeListener() {
     public void stateChanged(ChangeEvent e) {
-      thicknessStat.setText(String.format("%s",
-          slider.getValue()));
       canvas.setThickness(slider.getValue());
+      if (slider.getValueIsAdjusting()) {
+        thicknessStat.setText(String.format("[size: %s]", slider.getValue()));
+        thicknessStat.setVisible(true);
+      } else {
+        thicknessStat.setVisible(false);
+      }
     }
   };
 
@@ -168,15 +170,22 @@ public class Draw extends JFrame implements ActionListener {
     slider
         .setPreferredSize(new Dimension(WindowTools.GetScreenHeight(), (int) (WindowTools.GetScreenHeight() * 0.70)));
     slider.setVisible(true);
-    thicknessStat.setText(String.format("%s", slider.getValue()));
+    thicknessStat.setText(String.format("[size: %s]", slider.getValue()));
     sizePnl.add(slider);
     System.out.println("[INFO] sizePanel working...");
     return sizePnl;
   }
 
+  public void updateFrameLayout() {
+    this.revalidate();
+    this.repaint();
+  }
+
   private JPanel statusBarPanel() {
     JPanel statusPnl = new JPanel(new FlowLayout());
     statusPnl.add(filenameBar);
+    statusPnl.add(new JSeparator(JSeparator.VERTICAL));
+    statusPnl.add(thicknessStat);
     return statusPnl;
   }
 
@@ -202,6 +211,7 @@ public class Draw extends JFrame implements ActionListener {
 
   private JMenuBar menuBar() {
     JMenuBar menuBar = new JMenuBar();
+    menuBar.add(settingMenu());
     menuBar.add(fileMenu());
     menuBar.add(editMenu());
     menuBar.add(helpMenu());
@@ -211,17 +221,11 @@ public class Draw extends JFrame implements ActionListener {
 
   private JMenu helpMenu() {
     JMenu helpMenu = new JMenu("Help");
-    Icon licenseIcon = new ImageIcon(getClass().getResource("/icons/license.png"));
-    Icon aboutIcon = new ImageIcon(getClass().getResource("/icons/about.png"));
 
+    Icon licenseIcon = new ImageIcon(getClass().getResource("/icons/license.png"));
     JMenuItem license = new JMenuItem("license", licenseIcon);
     license.addActionListener(this);
     helpMenu.add(license);
-    helpMenu.addSeparator();
-
-    JMenuItem about = new JMenuItem("about", aboutIcon);
-    about.addActionListener(this);
-    helpMenu.add(about);
     System.out.println("[INFO] HelpMenu working...");
     return helpMenu;
   }
@@ -242,12 +246,18 @@ public class Draw extends JFrame implements ActionListener {
     return editMenu;
   }
 
+  private JMenu settingMenu() {
+    Icon exitIcon = new ImageIcon(getClass().getResource("/icons/exit.png"));
+    JMenu setting = new JMenu("Setting");
+    JMenuItem exit = new JMenuItem("Exit", exitIcon);
+    exit.addActionListener(this);
+    setting.add(exit);
+    return setting;
+  }
+
   private JMenu fileMenu() {
     Icon saveIcon = new ImageIcon(getClass().getResource("/icons/save.png"));
-    // Icon save_asIcon = new
-    // ImageIcon(getClass().getResource("/icons/save-as.png"));
     Icon openIcon = new ImageIcon(getClass().getResource("/icons/new-window.png"));
-    Icon exitIcon = new ImageIcon(getClass().getResource("/icons/exit.png"));
 
     JMenu fileMenu = new JMenu("File");
 
@@ -258,21 +268,46 @@ public class Draw extends JFrame implements ActionListener {
     JMenuItem saveFile = new JMenuItem("Save File", saveIcon);
     saveFile.addActionListener(this);
     fileMenu.add(saveFile);
-
-    /*
-     * :NOTE: should be added when other image format are supported
-     * JMenuItem save_as = new JMenuItem("Save As", save_asIcon);
-     * save_as.addActionListener(this);
-     * fileMenu.add(save_as);
-     */
-
-    fileMenu.addSeparator();
-    JMenuItem exit = new JMenuItem("Exit", exitIcon);
-    exit.addActionListener(this);
-    fileMenu.add(exit);
-
     System.out.println("[INFO] FileMenu working...");
     return fileMenu;
+  }
+
+  private void showLicenseDialog() {
+    String mitLicense = """
+                MIT License
+
+        Copyright (c) 2025 INNOCENT MPONDI
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+
+                """;
+
+    JTextArea textArea = new JTextArea(mitLicense);
+    textArea.setEditable(false);
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
+    textArea.setCaretPosition(0);
+
+    JScrollPane scrollPane = new JScrollPane(textArea);
+    scrollPane.setPreferredSize(new Dimension(500, 300));
+
+    JOptionPane.showMessageDialog(this, scrollPane, "MIT License", JOptionPane.INFORMATION_MESSAGE);
   }
 
   @Override
@@ -284,7 +319,7 @@ public class Draw extends JFrame implements ActionListener {
       System.out.println("Save pressed...");
       if (saveCounter == 0) {
         fileChooser = new JFileChooser();
-        int returnVal = fileChooser.showOpenDialog(this);
+        int returnVal = fileChooser.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
           file = fileChooser.getSelectedFile();
           saveCounter = 1;
@@ -308,6 +343,7 @@ public class Draw extends JFrame implements ActionListener {
         file = fileChooser.getSelectedFile();
         canvas.openFile(file);
         filenameBar.setText(file.toString());
+        updateFrameLayout();
       } else {
         System.out.println("[INFO] User cancelled opening file");
       }
@@ -319,26 +355,13 @@ public class Draw extends JFrame implements ActionListener {
       canvas.redo();
     } else if (e.getActionCommand().equals("license")) {
       System.out.println("[ACTION] license pressed...");
-    } else if (e.getActionCommand().equals("about")) {
-      System.out.println("[ACTION] about pressed...");
+      showLicenseDialog();
     } else if (e.getSource() == pencil) {
       System.out.println("[ACTION] pencil pressed...");
       canvas.pencil();
     } else if (e.getSource() == eraser) {
-      /*
-       * :TODO: change the defaultCursor to custom eraser cursor.
-       *
-       * =================================================
-       * The commented out code need complex implementation to check where the cursor
-       * is in order to
-       * continue using the custom cursor
-       * =================================================
-       *
-       * Toolkit toolkit = Toolkit.getDefaultToolkit();
-       * Image image = toolkit.getImage(getClass().getResource("/icons/eraser.png"));
-       * Cursor cursor = toolkit.createCustomCursor(image, new Point(0, 0), "img");
-       * this.setCursor(cursor);
-       */
+      canvas.eraserColor();
+      System.out.println("The Canvas BG color (Match Target) is: " + canvas.getBackground());
       System.out.println("[ACTION] eraser pressed...");
     } else if (e.getSource() == color_picker) {
       System.out.println("[ACTION] color_picker pressed...");
