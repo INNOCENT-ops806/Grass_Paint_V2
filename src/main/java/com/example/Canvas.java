@@ -20,7 +20,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-//@SuppressWarnings("unused")
 public class Canvas extends JPanel {
   private int X1, Y1, X2, Y2;
   private Graphics2D g;
@@ -30,10 +29,10 @@ public class Canvas extends JPanel {
   private MouseListener listener;
   private Rectangle shape;
   private MouseMotionAdapter motion;
+  public final static Color LIGHT = new Color(255, 255, 255);
 
   public Canvas() {
     defaultListener();
-    setBackground(Color.WHITE);
     this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     this.setPreferredSize(new Dimension(900, 600));
     System.out.println("[INFO] Canvas working...");
@@ -49,10 +48,14 @@ public class Canvas extends JPanel {
   }
 
   private BufferedImage copyImage(Image img) {
+    if (img == null || getWidth() == 0 || getHeight() == 0) {
+      return null;
+    }
     BufferedImage copyOfImage = new BufferedImage(getSize().width,
         getSize().height, BufferedImage.TYPE_INT_RGB);
     Graphics g = copyOfImage.createGraphics();
     g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+    g.dispose();// :NOTE: Always dispose temporary Graphics objects
     return copyOfImage;
   }
 
@@ -88,45 +91,92 @@ public class Canvas extends JPanel {
 
   public void openFile(File file) {
     try {
-      Image loadedImage = ImageIO.read(file);
-      this.img = loadedImage;
-      g = (Graphics2D) img.getGraphics();
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      super.repaint();
+      BufferedImage loadedImage = ImageIO.read(file);
+      if (img == null) {
+        if (getWidth() == 0 || getHeight() == 0) {
+          setSize(getPreferredSize());
+        }
+        initializeCanvasBuffer();
+      }
+      int x = (getWidth() - loadedImage.getWidth()) / 2;
+      int y = (getHeight() - loadedImage.getHeight()) / 2;
+      if (g != null) {
+        saveToStack(img);
+        g.setPaint(Color.WHITE);
+        g.fillRect(0, 0, getWidth(), getHeight());
+
+        g.drawImage(loadedImage, x, y, null);
+        g.setPaint(Color.BLACK);
+      }
+
+      this.revalidate();
+      this.repaint();
     } catch (IOException ex) {
-      System.err.println("[ERROR] Could not open file\n Please try again later or open a different file");
+      System.err.println("[ERROR] Could not open file: " + ex.getMessage());
+      ex.printStackTrace();
     }
   }
 
   private void setImage(Image img) {
+    this.img = img;
     g = (Graphics2D) img.getGraphics();
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
     g.setPaint(Color.black);
-    this.img = img;
     repaint();
   }
 
+  private void initializeCanvasBuffer() {
+    if (getWidth() <= 0 || getHeight() <= 0) {
+      return;
+    }
+    img = createImage(getWidth(), getHeight());
+    g = (Graphics2D) img.getGraphics();
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_ON);
+    g.setPaint(Color.WHITE);
+    g.fillRect(0, 0, getWidth(), getHeight());
+    g.setPaint(Color.black);
+    shape = new Rectangle(0, 0, getSize().width - 1, getSize().height - 1);
+  }
+
   public void paintComponent(Graphics g1) {
-    // :NOTE: If there is no img buffered or it gets resized, create one
-    if (img == null || img.getWidth(this) != getSize().width || img.getHeight(this) != getSize().height) {
-      img = createImage(getSize().width, getSize().height);
+    super.paintComponent(g1);
+
+    if (img == null) {
+      img = createImage(getWidth(), getHeight());
       g = (Graphics2D) img.getGraphics();
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-          RenderingHints.VALUE_ANTIALIAS_ON);
-      shape = new Rectangle(0, 0, getSize().width - 1, getSize().height - 1);
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setPaint(Color.WHITE);
+      g.fillRect(0, 0, getWidth(), getHeight());
+      g.setPaint(Color.BLACK);
+    } else if (img.getWidth(null) < getWidth() || img.getHeight(null) < getHeight()) {
+      Image newImg = createImage(getWidth(), getHeight());
+      Graphics2D newG = (Graphics2D) newImg.getGraphics();
+      newG.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+      newG.setPaint(Color.WHITE);
+      newG.fillRect(0, 0, getWidth(), getHeight());
+
+      newG.drawImage(img, 0, 0, null);
+
+      this.img = newImg;
+      this.g = newG;
+      this.g.setPaint(Color.BLACK);
     }
+
     g1.drawImage(img, 0, 0, null);
-    if (shape != null) {
-      Graphics2D g2d = (Graphics2D) g;
-      g2d.draw(shape);
-    }
+    Graphics2D g2d_Screen = (Graphics2D) g1;
+    g2d_Screen.setColor(Color.RED);
+    g2d_Screen.setStroke(new BasicStroke(1));
+    g2d_Screen.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
   }
 
   public void undo() {
     if (undoStack.size() > 0) {
       undoTemp = undoStack.pop();
-      redoStack.push(img);
+      if (img != null)
+        redoStack.push(copyImage(img));
       setImage(undoTemp);
     }
   }
@@ -137,6 +187,10 @@ public class Canvas extends JPanel {
       undoStack.push(img);
       setImage(redoTemp);
     }
+  }
+
+  public void eraserColor() {
+    g.setPaint(LIGHT);
   }
 
   public void pencil() {
@@ -171,7 +225,7 @@ public class Canvas extends JPanel {
   }
 
   public void gray() {
-    g.setPaint(Color.RED);
+    g.setPaint(Color.GRAY);
   }
 
   public void green() {
