@@ -70,14 +70,14 @@ public class Draw extends JFrame implements ActionListener {
 
     Icon pencilIcon = new ImageIcon(getClass().getResource("/icons/pencil.png"));
     pencil = new JButton(pencilIcon);
-    pencil.setToolTipText("Pencil");
+    pencil.setToolTipText("ctrl + P");
     pencil.setPreferredSize(new Dimension(48, 48));
     pencil.addActionListener(this);
     buttons.add(pencil);
 
     Icon eraserIcon = new ImageIcon(getClass().getResource("/icons/eraser.png"));
     eraser = new JButton(eraserIcon);
-    eraser.setToolTipText("Eraser");
+    eraser.setToolTipText("ctrl + T");
     eraser.setPreferredSize(new Dimension(48, 48));
     eraser.addActionListener(this);
     buttons.add(eraser);
@@ -140,7 +140,7 @@ public class Draw extends JFrame implements ActionListener {
 
     Icon color_ChooserIcon = new ImageIcon(getClass().getResource("/icons/color-chooser.png"));
     color_picker = new JButton(color_ChooserIcon);
-    color_picker.setToolTipText("Color Picker");
+    color_picker.setToolTipText("ctrl + C");
     color_picker.setPreferredSize(new Dimension(48, 48));
     color_picker.addActionListener(this);
     buttons.add(color_picker);
@@ -200,7 +200,7 @@ public class Draw extends JFrame implements ActionListener {
 
   private void setEnvironmentalDecoration() {
     if (System.getProperty("os.name").equalsIgnoreCase("Linux")) {
-      System.setProperty("flatlaf.menuBarEmbedded", "false");
+      System.setProperty("flatlaf.menuBarEmbedded", "true");
       System.out.println("[SYSTEM] Linux");
     } else {
       System.out.println("[SYSTEM] Windows");
@@ -222,12 +222,13 @@ public class Draw extends JFrame implements ActionListener {
   private JMenu helpMenu() {
     JMenu helpMenu = new JMenu("Help");
 
-    Icon licenseIcon = new ImageIcon(getClass().getResource("/icons/license.png"));
-    JMenuItem license = new JMenuItem("license", licenseIcon);
-    license.addActionListener(this);
-    helpMenu.add(license);
-    System.out.println("[INFO] HelpMenu working...");
-    return helpMenu;
+		Icon licenseIcon = new ImageIcon(getClass().getResource("/icons/license.png"));
+		JMenuItem license = new JMenuItem("license", licenseIcon);
+		license.setToolTipText("ctrl + L");
+		license.addActionListener(this);
+		helpMenu.add(license);
+		System.out.println("[INFO] HelpMenu working...");
+		return helpMenu;
   }
 
   private JMenu editMenu() {
@@ -236,10 +237,12 @@ public class Draw extends JFrame implements ActionListener {
     Icon redoIcon = new ImageIcon(getClass().getResource("/icons/redo.png"));
 
     JMenuItem undo = new JMenuItem("undo", undoIcon);
+    undo.setToolTipText("ctrl + U");
     undo.addActionListener(this);
     editMenu.add(undo);
 
     JMenuItem redo = new JMenuItem("redo", redoIcon);
+    redo.setToolTipText("ctrl + R");
     redo.addActionListener(this);
     editMenu.add(redo);
     System.out.println("[INFO] EditMenu working...");
@@ -250,6 +253,7 @@ public class Draw extends JFrame implements ActionListener {
     Icon exitIcon = new ImageIcon(getClass().getResource("/icons/exit.png"));
     JMenu setting = new JMenu("Setting");
     JMenuItem exit = new JMenuItem("Exit", exitIcon);
+    exit.setToolTipText("ctrl + E");
     exit.addActionListener(this);
     setting.add(exit);
     return setting;
@@ -262,10 +266,12 @@ public class Draw extends JFrame implements ActionListener {
     JMenu fileMenu = new JMenu("File");
 
     open = new JMenuItem("Open File", openIcon);
+    open.setToolTipText("ctrl + O");
     open.addActionListener(this);
     fileMenu.add(open);
 
     JMenuItem saveFile = new JMenuItem("Save File", saveIcon);
+    saveFile.setToolTipText("ctrl + S");
     saveFile.addActionListener(this);
     fileMenu.add(saveFile);
     System.out.println("[INFO] FileMenu working...");
