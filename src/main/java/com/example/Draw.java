@@ -4,10 +4,13 @@ import com.environment.WindowTools;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.InputEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -33,7 +36,7 @@ import javax.swing.JFileChooser;
 public class Draw extends JFrame implements ActionListener {
   private int saveCounter;
   private Canvas canvas;
-  private JLabel filenameBar, thicknessStat;// :NOTE: not done here!
+  private JLabel filenameBar, thicknessStat;
   private JFileChooser fileChooser;
   private File file;
   private Color color = Color.WHITE;
@@ -70,14 +73,15 @@ public class Draw extends JFrame implements ActionListener {
 
     Icon pencilIcon = new ImageIcon(getClass().getResource("/icons/pencil.png"));
     pencil = new JButton(pencilIcon);
-    pencil.setToolTipText("ctrl + P");
+    pencil.setMnemonic('P');
+    pencil.setToolTipText("ALT + P");
     pencil.setPreferredSize(new Dimension(48, 48));
     pencil.addActionListener(this);
     buttons.add(pencil);
 
     Icon eraserIcon = new ImageIcon(getClass().getResource("/icons/eraser.png"));
     eraser = new JButton(eraserIcon);
-    eraser.setToolTipText("ctrl + T");
+    eraser.setMnemonic('E');
     eraser.setPreferredSize(new Dimension(48, 48));
     eraser.addActionListener(this);
     buttons.add(eraser);
@@ -140,7 +144,7 @@ public class Draw extends JFrame implements ActionListener {
 
     Icon color_ChooserIcon = new ImageIcon(getClass().getResource("/icons/color-chooser.png"));
     color_picker = new JButton(color_ChooserIcon);
-    color_picker.setToolTipText("ctrl + C");
+    color_picker.setMnemonic('C');
     color_picker.setPreferredSize(new Dimension(48, 48));
     color_picker.addActionListener(this);
     buttons.add(color_picker);
@@ -222,13 +226,14 @@ public class Draw extends JFrame implements ActionListener {
   private JMenu helpMenu() {
     JMenu helpMenu = new JMenu("Help");
 
-		Icon licenseIcon = new ImageIcon(getClass().getResource("/icons/license.png"));
-		JMenuItem license = new JMenuItem("license", licenseIcon);
-		license.setToolTipText("ctrl + L");
-		license.addActionListener(this);
-		helpMenu.add(license);
-		System.out.println("[INFO] HelpMenu working...");
-		return helpMenu;
+    Icon licenseIcon = new ImageIcon(getClass().getResource("/icons/license.png"));
+    JMenuItem license = new JMenuItem("license", licenseIcon);
+    license.setAccelerator(KeyStroke.getKeyStroke('L', InputEvent.CTRL_DOWN_MASK));
+    license.setActionCommand("license");
+    license.addActionListener(this);
+    helpMenu.add(license);
+    System.out.println("[INFO] HelpMenu working...");
+    return helpMenu;
   }
 
   private JMenu editMenu() {
@@ -237,12 +242,14 @@ public class Draw extends JFrame implements ActionListener {
     Icon redoIcon = new ImageIcon(getClass().getResource("/icons/redo.png"));
 
     JMenuItem undo = new JMenuItem("undo", undoIcon);
-    undo.setToolTipText("ctrl + U");
+    undo.setAccelerator(KeyStroke.getKeyStroke('U', InputEvent.CTRL_DOWN_MASK));
+    undo.setActionCommand("undo");
     undo.addActionListener(this);
     editMenu.add(undo);
 
     JMenuItem redo = new JMenuItem("redo", redoIcon);
-    redo.setToolTipText("ctrl + R");
+    redo.setAccelerator(KeyStroke.getKeyStroke('R', InputEvent.CTRL_DOWN_MASK));
+    redo.setActionCommand("redo");
     redo.addActionListener(this);
     editMenu.add(redo);
     System.out.println("[INFO] EditMenu working...");
@@ -253,7 +260,9 @@ public class Draw extends JFrame implements ActionListener {
     Icon exitIcon = new ImageIcon(getClass().getResource("/icons/exit.png"));
     JMenu setting = new JMenu("Setting");
     JMenuItem exit = new JMenuItem("Exit", exitIcon);
-    exit.setToolTipText("ctrl + E");
+
+    exit.setAccelerator(KeyStroke.getKeyStroke('C', InputEvent.CTRL_DOWN_MASK));
+    exit.setActionCommand("Exit");
     exit.addActionListener(this);
     setting.add(exit);
     return setting;
@@ -266,12 +275,16 @@ public class Draw extends JFrame implements ActionListener {
     JMenu fileMenu = new JMenu("File");
 
     open = new JMenuItem("Open File", openIcon);
-    open.setToolTipText("ctrl + O");
+    open.setAccelerator(KeyStroke.getKeyStroke('O', InputEvent.CTRL_DOWN_MASK));
+    open.setActionCommand("Open File");
+
     open.addActionListener(this);
     fileMenu.add(open);
 
     JMenuItem saveFile = new JMenuItem("Save File", saveIcon);
-    saveFile.setToolTipText("ctrl + S");
+
+    saveFile.setAccelerator(KeyStroke.getKeyStroke('S', InputEvent.CTRL_DOWN_MASK));
+    saveFile.setActionCommand("Save File");
     saveFile.addActionListener(this);
     fileMenu.add(saveFile);
     System.out.println("[INFO] FileMenu working...");
@@ -319,7 +332,6 @@ public class Draw extends JFrame implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getActionCommand().equals("Exit")) {
-      System.out.println("[ACTION] Exit pressed...");
       System.exit(0);
     } else if (e.getActionCommand().equals("Save File")) {
       System.out.println("Save pressed...");
@@ -337,7 +349,6 @@ public class Draw extends JFrame implements ActionListener {
         canvas.saveFile(file);
       }
     } else if (e.getSource() == open) {
-      System.out.println("[ACTION] Open pressed...");
       if (System.getProperty("os.name").equalsIgnoreCase("Linux")) {
         fileChooser = new JFileChooser("~/");
       } else {
@@ -351,26 +362,19 @@ public class Draw extends JFrame implements ActionListener {
         filenameBar.setText(file.toString());
         updateFrameLayout();
       } else {
-        System.out.println("[INFO] User cancelled opening file");
+        System.err.println("[INFO] User cancelled opening file");
       }
     } else if (e.getActionCommand().equals("undo")) {
-      System.out.println("[ACTION] Undo pressed...");
       canvas.undo();
     } else if (e.getActionCommand().equals("redo")) {
-      System.out.println("[ACTION] Redo pressed...");
       canvas.redo();
     } else if (e.getActionCommand().equals("license")) {
-      System.out.println("[ACTION] license pressed...");
       showLicenseDialog();
     } else if (e.getSource() == pencil) {
-      System.out.println("[ACTION] pencil pressed...");
       canvas.pencil();
     } else if (e.getSource() == eraser) {
       canvas.eraserColor();
-      System.out.println("The Canvas BG color (Match Target) is: " + canvas.getBackground());
-      System.out.println("[ACTION] eraser pressed...");
     } else if (e.getSource() == color_picker) {
-      System.out.println("[ACTION] color_picker pressed...");
       color = JColorChooser.showDialog(canvas, "Pick your color!", color);
       if (color == null) {
         color = (Color.BLACK);

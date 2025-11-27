@@ -23,11 +23,10 @@ import javax.swing.JPanel;
 public class Canvas extends JPanel {
   private int X1, Y1, X2, Y2;
   private Graphics2D g;
-  private Image img, background, undoTemp, redoTemp;
+  private Image img, undoTemp, redoTemp;
   private final Custom_Stack<Image> undoStack = new Custom_Stack<>(10);
   private final Custom_Stack<Image> redoStack = new Custom_Stack<>(10);
   private MouseListener listener;
-  private Rectangle shape;
   private MouseMotionAdapter motion;
   public final static Color LIGHT = new Color(255, 255, 255);
 
@@ -137,7 +136,7 @@ public class Canvas extends JPanel {
     g.setPaint(Color.WHITE);
     g.fillRect(0, 0, getWidth(), getHeight());
     g.setPaint(Color.black);
-    shape = new Rectangle(0, 0, getSize().width - 1, getSize().height - 1);
+    new Rectangle(0, 0, getSize().width - 1, getSize().height - 1);
   }
 
   public void paintComponent(Graphics g1) {
@@ -204,7 +203,7 @@ public class Canvas extends JPanel {
   }
 
   public void setBackground(Image img) {
-    this.background = copyImage(img);
+    copyImage(img);
     setImage(copyImage(img));
   }
 
