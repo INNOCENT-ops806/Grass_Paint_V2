@@ -22,15 +22,15 @@ This current release includes the essential features for the core drawing engine
 - **I/O:** Load and save artwork as PNG files(currently you have to specify the extension but in future releases they will be automatically appended).
 
 ## Shortcuts 
-- <C-o> - Open a file
-- <C-s> - Save file
-- <C-u> - Undo action
-- <C-r> - Redo action
-- <C-c> - Exit application
-- <C-l> - View License
+- `<C-o>` ->  Open a file
+- `<C-s>` ->  Save file
+- `<C-u>` ->  Undo action
+- `<C-r>` ->  Redo action
+- `<C-c>` ->  Exit application
+- `<C-l>` ->  View License
 
-- Alt + p - Toggle pencil
-- Alt + e - Toggle eraser
+- Alt + p ->  Toggle pencil
+- Alt + e ->  Toggle eraser
 
 ## Usage
 
