@@ -74,7 +74,7 @@ java -jar /path/to/GrassPaint-v1.0.0-SNAPSHOT-jar-with-dependencies.jar
 
 ### GrassPaintV0.9.0
 
-![GrassPaintV0.9.0](screenshots/GrassPaintV0.9.0)
+![GrassPaintV0.9.0](screenshots/GrassPaint.png)
 
 ### Picking a color
 
@@ -90,7 +90,7 @@ java -jar /path/to/GrassPaint-v1.0.0-SNAPSHOT-jar-with-dependencies.jar
 
 ## Reporting Bugs & Feedback (Beta)
 
-If you find a bug, please open an Issue on this repository or send a detailed email. Your reports are essential for the v1.0 stable release\!
+If you find a bug, please open an Issue on this repository or send a detailed email.
 
 **When reporting an issue, please include:**
 
@@ -103,7 +103,7 @@ If you find a bug, please open an Issue on this repository or send a detailed em
 ### Libraries
 
 - **Core Technology:** Java Swing (Standard Desktop GUI Library).
-- **Look and Feel:** [FlatLaf](https://www.formdev.com/flatlaf/) (Provides the modern, dark/light theme options).
+- **Look and Feel:** [FlatLaf](https://www.formdev.com/flatlaf/) (provides the FlatLafLight theme used for this software).
 
 ### Credits
 
