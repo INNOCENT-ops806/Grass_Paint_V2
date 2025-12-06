@@ -11,7 +11,7 @@ GrassPaint is a cross-platform drawing application built on Java Swing, designed
 
 I initially had the idea for this software after buying a drawing tablet and feeling constrained by the limited and rigid shortcuts in existing applications. While GrassPaint doesn't implement Vim's modal editing, it is engineered to offer a high degree of **shortcut customization** and key bindings to boost your drawing efficiency.
 
-## Key Features (v0.9.0-Beta)
+## Key Features (v1.0.0)
 
 This current release includes the essential features for the core drawing engine:
 
@@ -21,16 +21,17 @@ This current release includes the essential features for the core drawing engine
 - **Core Tools:** Pencil, Eraser (with dynamic background matching), Color Picker, and color presets.
 - **I/O:** Load and save artwork as PNG files(currently you have to specify the extension but in future releases they will be automatically appended).
 
-## Shortcuts 
-- `<C-o>` ->  Open a file
-- `<C-s>` ->  Save file
-- `<C-u>` ->  Undo action
-- `<C-r>` ->  Redo action
-- `<C-c>` ->  Exit application
-- `<C-l>` ->  View License
+## Shortcuts
 
-- Alt + p ->  Toggle pencil
-- Alt + e ->  Toggle eraser
+- `<C-o>` -> Open a file
+- `<C-s>` -> Save file
+- `<C-u>` -> Undo action
+- `<C-r>` -> Redo action
+- `<C-c>` -> Exit application
+- `<C-l>` -> View License
+
+- Alt + p -> Toggle pencil
+- Alt + e -> Toggle eraser
 
 ## Usage
 
@@ -66,7 +67,7 @@ Download the executable `.jar` file from the latest release on GitHub: [Releases
 To run the JAR file:
 
 ```sh
-java -jar /path/to/GrassPaint-v0.9.0-beta.jar
+java -jar /path/to/GrassPaint-v1.0.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 
 ## Screenshots
